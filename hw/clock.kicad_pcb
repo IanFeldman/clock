@@ -196,7 +196,7 @@
 		(at 155.75 83.75 180)
 		(tags "MCP9808T-E/MS ")
 		(property "Reference" "U13"
-			(at 0 0 180)
+			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "1f9e491f-e82f-4a5c-baa6-ec083a3e3abe")
