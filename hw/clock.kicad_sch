@@ -11631,7 +11631,7 @@
 				)
 			)
 		)
-		(property "Value" "120uf"
+		(property "Value" "100uf"
 			(at 150.368 126.746 0)
 			(effects
 				(font
@@ -12926,7 +12926,7 @@
 				)
 			)
 		)
-		(property "Value" "120uf"
+		(property "Value" "100uf"
 			(at 159.512 216.916 0)
 			(effects
 				(font
@@ -12993,7 +12993,7 @@
 				)
 			)
 		)
-		(property "Value" "18pf"
+		(property "Value" "16pf"
 			(at 123.19 69.596 90)
 			(effects
 				(font
@@ -15156,7 +15156,7 @@
 				)
 			)
 		)
-		(property "Value" "120uf"
+		(property "Value" "100uf"
 			(at 150.368 144.526 0)
 			(effects
 				(font
@@ -16110,7 +16110,7 @@
 				)
 			)
 		)
-		(property "Value" "12.5pf"
+		(property "Value" "19pf"
 			(at 212.09 67.056 90)
 			(effects
 				(font
@@ -17511,7 +17511,7 @@
 				)
 			)
 		)
-		(property "Value" "10nf"
+		(property "Value" "1uf"
 			(at 85.344 222.504 0)
 			(effects
 				(font
@@ -18045,7 +18045,7 @@
 				)
 			)
 		)
-		(property "Value" "12.5pf"
+		(property "Value" "19pf"
 			(at 232.41 67.056 90)
 			(effects
 				(font
@@ -20354,7 +20354,7 @@
 				)
 			)
 		)
-		(property "Value" "18pf"
+		(property "Value" "16pf"
 			(at 146.05 69.596 90)
 			(effects
 				(font
