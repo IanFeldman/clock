@@ -3,10 +3,10 @@
 
 int main(void)
 {
-    LPC_GPIO_PORT->DIR0 = (1 << 17);
+    display_initialize();
+
     while (1)
     {
-        LPC_GPIO_PORT->NOT0 = (1 << 17);  // Toggle P0_17
         for (volatile int i = 0; i < 500000; i++); // Delay
     }
 

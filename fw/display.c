@@ -45,5 +45,7 @@ void display_initialize(void)
     LPC_GPIO_PORT->CLR0 |= SR_CLOCK_PIN | SR_SHIFT_PIN | SR_DATA1_PIN |
                            SR_DATA2_PIN | SR_DATA3_PIN | SR_DATA4_PIN |
                            SR_DATA5_PIN | SR_DATA6_PIN;
+
+    display_set_shift(SR_DATA1, 0xFF);
 }
 
