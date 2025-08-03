@@ -3,24 +3,34 @@
 
 #define DELAY_CNTS 100
 
-#define SR_CLEAR_PIN (1 << 12)  /* clear display - active low */
-#define SR_CLOCK_PIN (1 <<  3)  /* overall clock */
-#define SR_SHIFT_PIN (1 << 11)  /* shift data */
+#define SRCLR_PIN 12  /* active low clear */
+#define RCLK_PIN   3  /* shift clock */
+#define SRCLK_PIN  6  /* overall clock */
 
-#define SR_DATA1 13
-#define SR_DATA2 14
-#define SR_DATA3 15
-#define SR_DATA4 16
-#define SR_DATA5 17
-#define SR_DATA6  7
-#define SR_DATA1_PIN (1 << SR_DATA1)
-#define SR_DATA2_PIN (1 << SR_DATA2)
-#define SR_DATA3_PIN (1 << SR_DATA3)
-#define SR_DATA4_PIN (1 << SR_DATA4)
-#define SR_DATA5_PIN (1 << SR_DATA5)
-#define SR_DATA6_PIN (1 << SR_DATA6)
+#define SER1_PIN 13
+#define SER2_PIN 14
+#define SER3_PIN 15
+#define SER4_PIN 16
+#define SER5_PIN 17
+#define SER6_PIN  7
+
+#define LSB_MASK 0x01
+
+static const uint8_t display_table[10] =
+{
+    0x03, /* 0 */
+    0x9F, /* 1 */
+    0x25, /* 2 */
+    0x0D, /* 3 */
+    0x99, /* 4 */
+    0x49, /* 5 */
+    0x41, /* 6 */
+    0x1F, /* 7 */
+    0x01, /* 8 */
+    0x19, /* 9 */
+};
 
 void display_initialize(void);
 
-
 #endif /* DISPLAY_H */
+
