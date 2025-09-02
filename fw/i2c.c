@@ -17,6 +17,33 @@ void i2c_initialize(void)
     /* todo */
 
     /* set as master */
-    LPC_I2C->CFG = (1 << 0);
+    LPC_I2C->CFG = (1 << I2C_MSTEN);
+}
+
+void i2c_tx(uint8_t addr, uint8_t *data, int size)
+{
+    /* write address */
+    LPC_I2C->MSTDAT = addr;
+    /* start transaction */
+    LPC_I2C->MSTCTL = (1 << I2C_MSTSTART);
+    /* wait for send to complete */
+    while (!(LPC_I2C->STAT & (1 << I2C_MSTPENDING)));
+
+    /* perform data transaction */
+    for (int i = 0; i < size; i++)
+    {
+        LPC_I2C->MSTDAT = data[i];
+        /* indicate to continue */
+        LPC_I2C->MSTCTL = (1 << I2C_MSTCONT);
+        /* wait for send to complete */
+        while (!(LPC_I2C->STAT & (1 << I2C_MSTPENDING)));
+    }
+
+    /* stop transaction */
+    LPC_I2C->MSTCTL = (1 << I2C_MSTSTOP);
+}
+
+void i2c_irq(void) {
+    return;
 }
 

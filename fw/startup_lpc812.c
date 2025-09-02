@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "LPC8xx.h"
+#include "i2c.h"
 
 // External symbols defined in linker script
 extern uint32_t _estack;
@@ -33,7 +34,7 @@ const void *vector_table[] = {
     Default_Handler,        // UART2
     Default_Handler,        // Reserved
     Default_Handler,        // Reserved
-    Default_Handler,        // I2C0
+    i2c_irq,                // I2C0
     Default_Handler,        // SCT
     Default_Handler,        // MRT
     Default_Handler,        // CMP
