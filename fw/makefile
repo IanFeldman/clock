@@ -11,7 +11,7 @@ CFLAGS = -mcpu=$(MCU) -mthumb -O0 -g -Wall -std=c11 -I./cmsis
 LDFLAGS = -T linker.ld -nostdlib
 
 # Files
-OBJS = startup_lpc812.o main.o display.o i2c.o
+OBJS = startup_lpc812.o main.o display.o i2c.o uart.o
 TARGET = clock
 
 all: $(TARGET).hex
