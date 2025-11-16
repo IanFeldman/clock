@@ -35,7 +35,7 @@ const void *vector_table[] = {
     Default_Handler,        // UART2
     Default_Handler,        // Reserved
     Default_Handler,        // Reserved
-    i2c_irq,                // I2C0
+    Default_Handler,        // I2C0
     Default_Handler,        // SCT
     Default_Handler,        // MRT
     Default_Handler,        // CMP
