@@ -31,6 +31,7 @@ static const uint8_t display_table[10] =
 };
 
 void display_initialize(void);
+void display_set_shift(uint8_t *values);
 
 #endif /* DISPLAY_H */
 

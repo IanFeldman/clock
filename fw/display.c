@@ -21,7 +21,7 @@ static void display_pulse_clk(void)
 
 
 /* Clock value into shift register. */
-static void display_set_shift(uint8_t *values)
+void display_set_shift(uint8_t *values)
 {
     int shift_cnt = 8;
     for (int i = 0; i < shift_cnt; i++)
