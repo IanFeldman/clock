@@ -26,5 +26,8 @@ clean:
 	rm -f *.o *.elf *.hex
 
 flash: $(TARGET).hex
-	lpc21isp -verify -wipe $< /dev/cu.usbserial-DU0DO48A 115200 12000
+ifndef PORT
+	$(error PORT is not defined for flash)
+endif
+	lpc21isp -verify -wipe $< ${PORT} 115200 12000
 
