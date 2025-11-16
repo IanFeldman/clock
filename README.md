@@ -11,3 +11,7 @@
 - Independent USB current/voltage measureement
 - On board USB-Serial converter for easy programming/syncing
 - Analog display brightness
+
+## Build Deps
+- lpc21isp (serial flasher)
+- arm-none-eabi-gcc (cortex m compiler)
