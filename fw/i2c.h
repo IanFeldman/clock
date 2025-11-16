@@ -22,9 +22,12 @@
 #define RTC_HRS_ADDR 0x02
 
 typedef struct {
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
+    uint8_t hours_tens;
+    uint8_t hours_ones;
+    uint8_t minutes_tens;
+    uint8_t minutes_ones;
+    uint8_t seconds_tens;
+    uint8_t seconds_ones;
 } rtc_time_t;
 
 void i2c_initialize(void);

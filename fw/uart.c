@@ -14,8 +14,8 @@ void uart_initialize(void)
     /* todo */
 
     /* switch matrix */
-    LPC_SWM->PINASSIGN0 |= (TX_PIN << TX_EN_POS);
-    LPC_SWM->PINASSIGN0 |= (RX_PIN << RX_EN_POS);
+    uint32_t reg = ~((0xFF << TX_EN_POS) | (0xFF << RX_EN_POS));
+    LPC_SWM->PINASSIGN0 = reg | ((TX_PIN << TX_EN_POS) | (RX_PIN << RX_EN_POS));
 
     /* configure baud for 9600 */
     /* U_PCLK = UARTCLKDIV/(1 + MULT/DIV) */

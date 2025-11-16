@@ -14,13 +14,16 @@ int main(void)
     uart_print_esc(HOME_CURSOR);
     uart_print_ln("Clock initialized");
 
-    rtc_time_t time = { 0, 0, 0 };
+    /* initalize time */
+    rtc_time_t time = { 0, 0, 0, 0, 0 };
     i2c_rtc_set_time(time);
 
     while (1)
     {
+        /* get time */
         rtc_time_t time = i2c_rtc_get_time();
         display_set_shift((uint8_t *)&time);
+        uart_print_ln("Display updated");
         for (int i = 0; i < 1000000; i++);
     }
 

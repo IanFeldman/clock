@@ -11,8 +11,10 @@ void i2c_initialize(void)
     LPC_SYSCON->PRESETCTRL |= (1 << I2C_RST_N);
 
     /* switch matrix */
-    LPC_SWM->PINASSIGN7 |= (SDA_PIN << SDA_EN_POS);
-    LPC_SWM->PINASSIGN8 |= (SCL_PIN << SCL_EN_POS);
+    uint32_t reg7 = ~(0xFF << SDA_EN_POS);
+    uint32_t reg8 = ~(0xFF << SCL_EN_POS);
+    LPC_SWM->PINASSIGN7 = reg7 | (SDA_PIN << SDA_EN_POS);
+    LPC_SWM->PINASSIGN8 = reg8 | (SCL_PIN << SCL_EN_POS);
 
     /* clock speed */
     /* 48 MHz / 480 = 100kHz (standard mode) */
@@ -28,6 +30,7 @@ void i2c_tx(uint8_t chip_addr, uint8_t data_addr, uint8_t *data, int size)
 {
     /* write slave address with read/~write bit set to 0 */
     chip_addr &= ~(1 << I2C_READWRITE);
+    LPC_I2C->MSTDAT = chip_addr;
     /* start the transmission */
     LPC_I2C->MSTCTL = (1 << I2C_MSTSTART);
     /* wait for pending status to be set */
@@ -62,12 +65,13 @@ void i2c_rx(uint8_t chip_addr, uint8_t data_addr, uint8_t *data, int size)
 
     /* write slave address with read/~write bit set to 0 */
     chip_addr &= ~(1 << I2C_READWRITE);
+    LPC_I2C->MSTDAT = chip_addr;
     /* start the transmission */
     LPC_I2C->MSTCTL = (1 << I2C_MSTSTART);
     /* wait for pending status to be set */
     while (!(LPC_I2C->STAT & (1 << I2C_MSTPENDING)));
     /* write 8 bits of data address */
-    LPC_I2C->MSTDAT = chip_addr;
+    LPC_I2C->MSTDAT = data_addr;
     /* indicate to continue */
     LPC_I2C->MSTCTL = (1 << I2C_MSTCONT);
     /* wait for pending status to be set */
@@ -76,6 +80,7 @@ void i2c_rx(uint8_t chip_addr, uint8_t data_addr, uint8_t *data, int size)
     /* ===== read ===== */
     /* write slave address with read/~write bit set to 1 */
     chip_addr |= (1 << I2C_READWRITE);
+    LPC_I2C->MSTDAT = chip_addr;
     /* restart the transmission */
     LPC_I2C->MSTCTL = (1 << I2C_MSTSTART);
 
@@ -100,30 +105,47 @@ void i2c_rx(uint8_t chip_addr, uint8_t data_addr, uint8_t *data, int size)
 }
 
 
-/* Get current seconds, minutes, hours from RTC */
+/* Set RTC time, 24-hour mode, oscillator enabled */
 void i2c_rtc_set_time(rtc_time_t time)
 {
-    i2c_tx(RTC_CHIP_ADDR, RTC_HRS_ADDR, &time.hours,   sizeof(time.hours));
-    i2c_tx(RTC_CHIP_ADDR, RTC_MIN_ADDR, &time.minutes, sizeof(time.minutes));
-    /* enable oscillator  */
-    time.seconds |= (1 << 7);
-    i2c_tx(RTC_CHIP_ADDR, RTC_SEC_ADDR, &time.seconds, sizeof(time.seconds));
+    uint8_t hours_data =
+        (time.hours_ones & 0x0F) | (time.hours_tens << 4);
+    hours_data &= ~(1 << 6); /* set to 24-hour time */
+    i2c_tx(RTC_CHIP_ADDR, RTC_HRS_ADDR, &hours_data, sizeof(hours_data));
+
+    uint8_t minutes_data =
+        (time.minutes_ones & 0x0F) |  (time.minutes_tens << 4);
+    i2c_tx(RTC_CHIP_ADDR, RTC_MIN_ADDR, &minutes_data, sizeof(minutes_data));
+
+    uint8_t seconds_data =
+        (time.seconds_ones & 0x0F) |  (time.seconds_tens << 4);
+    seconds_data |= (1 << 7); /* enable oscillator */
+    i2c_tx(RTC_CHIP_ADDR, RTC_SEC_ADDR, &seconds_data, sizeof(hours_data));
 }
 
 
 /* Get current seconds, minutes, hours from RTC */
 rtc_time_t i2c_rtc_get_time(void)
 {
+    rtc_time_t time;
+
     /* get seconds */
     uint8_t seconds_data;
     i2c_rx(RTC_CHIP_ADDR, RTC_SEC_ADDR, &seconds_data, sizeof(seconds_data));
-    uint8_t seconds_ones = seconds_data & 0x0F;
-    uint8_t seconds_tens = (seconds_data & 0x70) >> 4;
+    time.seconds_ones = seconds_data & 0x0F;
+    time.seconds_tens = (seconds_data & 0x70) >> 4;
 
-    rtc_time_t time;
-    time.seconds = (seconds_tens * 10) + seconds_ones;
-    time.minutes = 0;
-    time.hours = 0;
+    /* get minutes */
+    uint8_t minutes_data;
+    i2c_rx(RTC_CHIP_ADDR, RTC_MIN_ADDR, &minutes_data, sizeof(minutes_data));
+    time.minutes_ones = minutes_data & 0x0F;
+    time.minutes_tens = (minutes_data & 0x70) >> 4;
+
+    /* get hours */
+    uint8_t hours_data;
+    i2c_rx(RTC_CHIP_ADDR, RTC_HRS_ADDR, &hours_data, sizeof(hours_data));
+    time.hours_ones = hours_data & 0x0F;
+    time.hours_tens = (hours_data & 0x30) >> 4;
 
     return time;
 }
