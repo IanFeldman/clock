@@ -11,12 +11,12 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);
 SECTIONS
 {
   . = ORIGIN(FLASH);
-  .isr_vector :
+  .isr_vector (READONLY) :
   {
     KEEP(*(.isr_vector))
   } > FLASH
 
-  .text : 
+  .text (READONLY) :
   {
     *(.text*)
     *(.rodata*)
