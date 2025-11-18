@@ -6,6 +6,7 @@
 #define PPS_NVIC_NUM 24 /* interrupt 24 in NVIC */
 
 void PININT0_IRQHandler(void);
+void pps_initialize(void);
 
 #endif /* MAIN_H */
 
