@@ -46,6 +46,9 @@ void display_set_shift(uint8_t *values)
 /* Initialize pins and shift registers to zero. */
 void display_initialize(void)
 {   
+    /* enable clock for gpio */
+    LPC_SYSCON->SYSAHBCLKCTRL |= (1 << GPIO_CLK_EN);
+
     /* disable SWCLK function (bit 2) so PIO0_3 can be used as GPIO */
     LPC_SWM->PINENABLE0 |= (1 << 2);
 

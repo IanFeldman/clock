@@ -105,6 +105,16 @@ void i2c_rx(uint8_t chip_addr, uint8_t data_addr, uint8_t *data, int size)
 }
 
 
+/* Set RTC multi-function pin to square wave output and configure clock trim */
+void i2c_rtc_output_config(void)
+{
+    /* SQWEN = 1 */
+    /* todo: trim */
+    uint8_t config = (1 << 6);
+    i2c_tx(RTC_CHIP_ADDR, RTC_CTRL_ADDR, &config, sizeof(config));
+}
+
+
 /* Set RTC time, 24-hour mode, oscillator enabled */
 void i2c_rtc_set_time(rtc_time_t time)
 {

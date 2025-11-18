@@ -1,6 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#define GPIO_CLK_EN 6
 #define DELAY_CNTS 100
 
 #define SRCLR_PIN 12  /* active low clear */

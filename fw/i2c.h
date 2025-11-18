@@ -17,6 +17,7 @@
 #define I2C_READWRITE     0
 
 #define RTC_CHIP_ADDR 0xDE
+#define RTC_CTRL_ADDR 0x07
 #define RTC_SEC_ADDR 0x00
 #define RTC_MIN_ADDR 0x01
 #define RTC_HRS_ADDR 0x02
@@ -35,6 +36,7 @@ void i2c_tx(uint8_t chip_addr, uint8_t addr, uint8_t *data, int size);
 void i2c_rx(uint8_t chip_addr, uint8_t addr, uint8_t *data, int size);
 
 /* rtc functions */
+void i2c_rtc_output_config(void);
 rtc_time_t i2c_rtc_get_time(void);
 void i2c_rtc_set_time(rtc_time_t time);
 
