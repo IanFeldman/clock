@@ -2,7 +2,7 @@
 #define DISPLAY_H
 
 #define GPIO_CLK_EN 6
-#define DELAY_CNTS 100
+#define DELAY_CNTS 1
 
 #define SRCLR_PIN 12  /* active low clear */
 #define RCLK_PIN   3  /* shift clock */
