@@ -24,6 +24,7 @@ int main(void)
     /* initalize time */
     i2c_rtc_output_config();
     rtc_time_t time = { 0, 0, 0, 0, 0 };
+    i2c_rtc_set_time(time);
 
     while (1)
     {
