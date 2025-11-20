@@ -1,6 +1,8 @@
 #include "uart.h"
 #include "LPC8xx.h"
+#include "util.h"
 
+/* Initialize uart peripheral at 9600 baud with rx interrupts */
 void uart_initialize(void)
 {
     /* enable clock */
@@ -9,9 +11,6 @@ void uart_initialize(void)
     /* clear resets */
     LPC_SYSCON->PRESETCTRL |= (1 << UARTFRG_RST_N); // clear frg reset
     LPC_SYSCON->PRESETCTRL |= (1 << UART0_RST_N); // clear uart reset
-
-    /* enable/disable interrupts */
-    /* todo */
 
     /* switch matrix */
     uint32_t reg = ~((0xFF << TX_EN_POS) | (0xFF << RX_EN_POS));
@@ -29,6 +28,15 @@ void uart_initialize(void)
 
     /* baud rate = U_PCLK/16 x BRGVAL */
     LPC_USART0->BRG = 78;
+
+    /* configure control register */
+    LPC_USART0->CTRL = 0;
+    /* clear any pending flags */
+    LPC_USART0->STAT = 0xFFFF;
+
+    /* enable rx interrupts */
+    LPC_USART0->INTENSET = (1 << UART_RX_INT_EN);
+    NVIC_EnableIRQ(UART0_IRQn);
 
     /* configure for 8 bits, no parity, 1 stop bit */
     LPC_USART0->CFG = (1 << UART_EN_POS) | (1 << UART_LEN_POS);
@@ -81,8 +89,24 @@ void uart_print_hex(char val)
 }
 
 
-void uart_irq(void)
+/* Convert message payload to bcd and store in rtc_time_t
+ * Todo: Add rtc_date_t
+ */
+void uart_handle_message(char *msg, rtc_time_t *time)
 {
-    /* todo */
+    clk_set_msg_t clk_set;
+    memcpy(&clk_set, (void *)msg + sizeof(UART_RX_SYNC), sizeof(clk_set));
+
+    /* convert to time */
+    time->hours_tens = clk_set.hours / 10;
+    time->hours_ones = clk_set.hours - (time->hours_tens * 10);
+    time->minutes_tens = clk_set.minutes / 10;
+    time->minutes_ones = clk_set.minutes - (time->minutes_tens * 10);
+    time->seconds_tens = clk_set.seconds / 10;
+    time->seconds_ones = clk_set.seconds - (time->seconds_tens * 10);
+
+    /* todo: check if numbers are invalid */
+
+    /* todo: convert to date */
 }
 

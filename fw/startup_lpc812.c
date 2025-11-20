@@ -1,7 +1,5 @@
 #include <stdint.h>
 #include "LPC8xx.h"
-#include "i2c.h"
-#include "uart.h"
 #include "main.h"
 
 // External symbols defined in linker script
@@ -31,7 +29,7 @@ const void *vector_table[] = {
     Default_Handler,        // SPI0
     Default_Handler,        // SPI1
     Default_Handler,        // Reserved
-    Default_Handler,        // UART0
+    UART0_IRQHandler,       // UART0
     Default_Handler,        // UART1
     Default_Handler,        // UART2
     Default_Handler,        // Reserved

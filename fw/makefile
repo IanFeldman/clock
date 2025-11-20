@@ -8,7 +8,7 @@ AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 CFLAGS = -mcpu=$(MCU) -mthumb -O0 -g -Wall -std=c11 -I./cmsis -ffreestanding -fno-builtin
-LDFLAGS = -T linker.ld -nostdlib
+LDFLAGS = -T linker.ld -nostdlib -lgcc
 
 # Files
 OBJS = startup_lpc812.o main.o display.o i2c.o uart.o util.o
