@@ -6,6 +6,7 @@
 
 static inline void increment_time(void);
 static void gpio_int_initialize(void);
+static void debounce(void);
 
 /* isr variables */
 volatile rtc_time_t time = { 0, 0, 0, 0, 0 };
@@ -34,16 +35,17 @@ int main(void)
     while (1)
     {
         /* check incoming message */
-        if (rx_flag) {
+        if (rx_flag)
+        {
             uart_handle_message((char *)rx_buffer, (rtc_time_t *)&time);
             i2c_rtc_set_time(time);
             rx_flag = 0;
         }
 
         /* check mode */
-        if (mode_flag) {
-            uart_print_ln("Mode button pressed!");
-            mode_flag = 0;
+        if (mode_flag)
+        {
+            debounce();
         }
 
         /* 1Hz pps */
@@ -133,8 +135,29 @@ static inline void increment_time(void)
 }
 
 
+static void debounce(void)
+{
+    static int counter = 0;
+
+    counter++;
+    /* timeout */
+    if (counter > MODE_DEBOUNCE)
+    {
+        /* active low */
+        int press = !(LPC_GPIO_PORT->B0[MODE_PIN]);
+        if (press)
+        {
+            uart_print_ln("Valid press");
+        }
+        counter = 0; 
+        mode_flag = 0;
+    }
+}
+
+
 /* RTC PPS external interrrupt handler */
-void PININT0_IRQHandler(void) {
+void PININT0_IRQHandler(void)
+{
     /* check interrupt flag */
     if (LPC_PIN_INT->IST & (1 << PPS_IRQ))
     {
@@ -146,7 +169,8 @@ void PININT0_IRQHandler(void) {
 
 
 /* MODE pin external interrrupt handler */
-void PININT1_IRQHandler(void) {
+void PININT1_IRQHandler(void)
+{
     /* check interrupt flag and set mode flag */
     if (LPC_PIN_INT->IST & (1 << MODE_IRQ))
     {

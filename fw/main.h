@@ -6,6 +6,7 @@
 
 #define MODE_PIN 1
 #define MODE_IRQ 1 /* PININT1_IRQ */
+#define MODE_DEBOUNCE 1000
 
 void PININT0_IRQHandler(void);
 void PININT1_IRQHandler(void);
