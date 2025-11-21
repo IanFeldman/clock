@@ -6,7 +6,7 @@
 
 static inline void increment_time(void);
 static void gpio_int_initialize(void);
-static void debounce(void);
+static int debounce(void);
 
 /* isr variables */
 volatile rtc_time_t time = { 0, 0, 0, 0, 0 };
@@ -32,6 +32,10 @@ int main(void)
     i2c_rtc_output_config();
     i2c_rtc_set_time(time);
 
+    /* 0: off, 1: time, ... */
+    int mode = 1;
+    int update_display = 0;
+
     while (1)
     {
         /* check incoming message */
@@ -39,21 +43,41 @@ int main(void)
         {
             uart_handle_message((char *)rx_buffer, (rtc_time_t *)&time);
             i2c_rtc_set_time(time);
+            update_display = 1;
             rx_flag = 0;
         }
 
         /* check mode */
-        if (mode_flag)
+        if (mode_flag && debounce())
         {
-            debounce();
+            mode++;
+            if (mode >= MODE_COUNT)
+            {
+                mode = 0;
+                display_clear();
+            }
+            else
+            {
+                update_display = 1;
+            }
         }
 
-        /* 1Hz pps */
-        if (pps_flag)
+        /* service 1hz pps */
+        if (pps_flag || update_display)
         {
-            /* update display with updated time */
-            display_set_shift((uint8_t *)&time);
+            switch(mode)
+            {
+                /* normal time display */
+                case 1:
+                    display_set((uint8_t *)&time);
+                    break;
+
+                /* off */
+                default:
+                    break;
+            }
             pps_flag = 0;
+            update_display = 0;
         }
     }
 
@@ -87,7 +111,6 @@ static void gpio_int_initialize(void)
     NVIC_EnableIRQ(PININT0_IRQn);
     NVIC_EnableIRQ(PININT1_IRQn);
 }
-
 
 
 /* Increment current time by one second */
@@ -135,7 +158,8 @@ static inline void increment_time(void)
 }
 
 
-static void debounce(void)
+/* Debounce MODE pin input. Return 1 if pressed, 0 otherwise */
+static int debounce(void)
 {
     static int counter = 0;
 
@@ -145,13 +169,11 @@ static void debounce(void)
     {
         /* active low */
         int press = !(LPC_GPIO_PORT->B0[MODE_PIN]);
-        if (press)
-        {
-            uart_print_ln("Valid press");
-        }
         counter = 0; 
         mode_flag = 0;
+        return press;
     }
+    return 0;
 }
 
 

@@ -21,9 +21,9 @@ static void display_pulse_clk(void)
 
 
 /* Clock value into shift register. */
-void display_set_shift(uint8_t *values)
+void display_set(uint8_t *values)
 {
-    int shift_cnt = 8;
+    const int shift_cnt = 8;
     for (int i = 0; i < shift_cnt; i++)
     {
         /* set data */
@@ -66,7 +66,15 @@ void display_initialize(void)
     LPC_GPIO_PORT->SET0 |= (1 << SRCLR_PIN);
     display_delay(DELAY_CNTS);
 
-    uint8_t values[6] = {0, 0, 0, 0, 0, 0};
-    display_set_shift(values);
+    const uint8_t values[6] = {0, 0, 0, 0, 0, 0};
+    display_set((uint8_t *)values);
+}
+
+
+/* Clear display */
+void display_clear(void)
+{
+    const uint8_t values[6] = {10, 10, 10, 10, 10, 10};
+    display_set((uint8_t *)values);
 }
 
