@@ -4,9 +4,13 @@
 #include "uart.h"
 #include "main.h"
 
+static inline void increment_time(void);
+static void gpio_int_initialize(void);
+
 /* isr variables */
 volatile rtc_time_t time = { 0, 0, 0, 0, 0 };
 volatile int pps_flag = 0;
+volatile int mode_flag = 0;
 volatile int rx_flag = 0;
 volatile char rx_buffer[32];
 
@@ -20,8 +24,8 @@ int main(void)
     uart_print_esc(CLEAR_SCREEN);
     uart_print_esc(HOME_CURSOR);
 
-    /* initialize pps pin */
-    pps_initialize();
+    /* initialize pin interrupts */
+    gpio_int_initialize();
 
     /* initalize time */
     i2c_rtc_output_config();
@@ -34,6 +38,12 @@ int main(void)
             uart_handle_message((char *)rx_buffer, (rtc_time_t *)&time);
             i2c_rtc_set_time(time);
             rx_flag = 0;
+        }
+
+        /* check mode */
+        if (mode_flag) {
+            uart_print_ln("Mode button pressed!");
+            mode_flag = 0;
         }
 
         /* 1Hz pps */
@@ -49,28 +59,37 @@ int main(void)
 }
 
 
-/* Enable external rising edge interrupt for PPS pin on PININT0 */
-void pps_initialize(void)
+/* Enable external interrupts for gpio pins:
+ *  - Rising edge PININT0 for PPS (PIO0_2)
+ *  - Falling edge PININT1 for MODE (PIO0_1)
+ */
+static void gpio_int_initialize(void)
 {
     /* disable SWDIO function (bit 3) so PIO0_2 can be used as GPIO */
-    LPC_SWM->PINENABLE0 |= (1 << 3);
-    /* set input */
-    LPC_GPIO_PORT->DIR0 &= ~(1 << PPS_PIN);
-    /* set external interrupt */
+    /* disable ACMP_I2 function (bit 1) so PIO0_1 can be used as GPIO */
+    LPC_SWM->PINENABLE0 |= (1 << 3) | (1 << 1);
+    /* set pins as inputs */
+    LPC_GPIO_PORT->DIR0 &= ~((1 << PPS_PIN) | (1 << MODE_PIN));
+    /* set external interrupts */
     LPC_SYSCON->PINTSEL[PPS_IRQ] = PPS_PIN;
-    /* enable edge sensitive */
-    LPC_PIN_INT->ISEL &= ~(1 << PPS_IRQ);
-    /* enable rising edge detect */
+    LPC_SYSCON->PINTSEL[MODE_IRQ] = MODE_PIN;
+    /* set edge sensitive */
+    LPC_PIN_INT->ISEL &= ~((1 << PPS_IRQ) | (1 << MODE_IRQ));
+    /* PPS detect rising edge */
     LPC_PIN_INT->IENR |= (1 << PPS_IRQ);
-    /* clear nay pending/leftover flags */
+    /* MODE detect falling edge */
+    LPC_PIN_INT->IENF |= (1 << MODE_IRQ);
+    /* clear any pending/leftover flags */
     LPC_PIN_INT->IST = 0xFF;
-    /* enable interrupt */
+    /* enable interrupts */
     NVIC_EnableIRQ(PININT0_IRQn);
+    NVIC_EnableIRQ(PININT1_IRQn);
 }
 
 
+
 /* Increment current time by one second */
-static inline void increment_time()
+static inline void increment_time(void)
 {
     time.seconds_ones++;
     /* check seconds */
@@ -122,6 +141,17 @@ void PININT0_IRQHandler(void) {
         pps_flag = 1;
         increment_time();
         LPC_PIN_INT->IST = (1 << PPS_IRQ);
+    }
+}
+
+
+/* MODE pin external interrrupt handler */
+void PININT1_IRQHandler(void) {
+    /* check interrupt flag and set mode flag */
+    if (LPC_PIN_INT->IST & (1 << MODE_IRQ))
+    {
+        mode_flag = 1;
+        LPC_PIN_INT->IST = (1 << MODE_IRQ);
     }
 }
 

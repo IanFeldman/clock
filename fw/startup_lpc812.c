@@ -44,7 +44,7 @@ const void *vector_table[] = {
     Default_Handler,        // WKT
     0, 0, 0, 0, 0, 0, 0, 0, // Reserved
     PININT0_IRQHandler,     // PININT0
-    Default_Handler,        // PININT1
+    PININT1_IRQHandler,     // PININT1
     Default_Handler,        // PININT2
     Default_Handler,        // PININT3
     Default_Handler,        // PININT4
