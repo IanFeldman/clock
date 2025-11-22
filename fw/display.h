@@ -1,6 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#include "i2c.h"
+
 #define GPIO_CLK_EN 6
 #define DELAY_CNTS 1
 
@@ -16,12 +18,14 @@
 #define SER6_PIN  7
 
 #define LSB_MASK 0x01
+#define POINT_MASK 0xFE
 
 /* indices of non-numerical display symbols */
 #define DSP_CLR 10
 #define DSP_DEG 11
 #define DSP_F   12
 #define DSP_C   13
+
 
 static const uint8_t display_table[14] =
 {
@@ -42,8 +46,9 @@ static const uint8_t display_table[14] =
 };
 
 void display_initialize(void);
-void display_set(uint8_t *values);
 void display_clear(void);
+void display_time(rtc_time_t *time);
+void display_temp(tmp_temp_t *temp);
 
 #endif /* DISPLAY_H */
 

@@ -69,13 +69,13 @@ int main(void)
             {
                 /* normal time display */
                 case 1:
-                    display_set((uint8_t *)&time);
+                    display_time((rtc_time_t *)&time);
                     break;
 
                 /* temperature display */
                 case 2:
                     tmp_temp_t temp = i2c_tmp_get_temp();
-                    display_set((uint8_t *)&temp);
+                    display_temp(&temp);
                     break;
 
                 /* off */

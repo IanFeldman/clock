@@ -22,18 +22,18 @@ static void display_pulse_clk(void)
 
 
 /* Clock value into shift register. */
-void display_set(uint8_t *values)
+static void display_set(uint8_t *values)
 {
     const int shift_cnt = 8;
     for (int i = 0; i < shift_cnt; i++)
     {
         /* set data */
-        LPC_GPIO_PORT->B0[SER1_PIN] = (display_table[values[0]] >> i) & LSB_MASK;
-        LPC_GPIO_PORT->B0[SER2_PIN] = (display_table[values[1]] >> i) & LSB_MASK;
-        LPC_GPIO_PORT->B0[SER3_PIN] = (display_table[values[2]] >> i) & LSB_MASK;
-        LPC_GPIO_PORT->B0[SER4_PIN] = (display_table[values[3]] >> i) & LSB_MASK;
-        LPC_GPIO_PORT->B0[SER5_PIN] = (display_table[values[4]] >> i) & LSB_MASK;
-        LPC_GPIO_PORT->B0[SER6_PIN] = (display_table[values[5]] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER1_PIN] = (values[0] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER2_PIN] = (values[1] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER3_PIN] = (values[2] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER4_PIN] = (values[3] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER5_PIN] = (values[4] >> i) & LSB_MASK;
+        LPC_GPIO_PORT->B0[SER6_PIN] = (values[5] >> i) & LSB_MASK;
 
         display_pulse_clk();
     }
@@ -77,6 +77,36 @@ void display_clear(void)
 {
     uint8_t values[6];
     memset(values, DSP_CLR, 6);
+    display_set(values);
+}
+
+
+/* Update display with time */
+void display_time(rtc_time_t *time)
+{
+    uint8_t values[6] = {
+        display_table[time->hours_tens],
+        display_table[time->hours_ones],
+        display_table[time->minutes_tens],
+        display_table[time->minutes_ones],
+        display_table[time->seconds_tens],
+        display_table[time->seconds_ones]
+    };
+    display_set(values);
+}
+
+
+/* Update display with time */
+void display_temp(tmp_temp_t *temp)
+{
+    uint8_t values[6] = {
+        display_table[temp->deg_tens],
+        display_table[temp->deg_ones] & POINT_MASK,
+        display_table[temp->deg_tenths],
+        display_table[temp->deg_hundredths],
+        display_table[DSP_DEG],
+        display_table[(temp->deg_unit ? DSP_F : DSP_C)]
+    };
     display_set(values);
 }
 

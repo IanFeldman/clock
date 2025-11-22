@@ -201,10 +201,8 @@ tmp_temp_t i2c_tmp_get_temp(void)
     temp_m_c -= (temp.deg_tenths * 10);
     /* d */
     temp.deg_hundredths = temp_m_c;
-
-    /* add symbols */
-    temp.deg_symbol = DSP_DEG;
-    temp.deg_unit = DSP_C;
+    /* celcius */
+    temp.deg_unit = 0;
 
     return temp;
 }

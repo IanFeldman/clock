@@ -43,8 +43,7 @@ typedef struct {
     uint8_t deg_ones;
     uint8_t deg_tenths;
     uint8_t deg_hundredths;
-    uint8_t deg_symbol;
-    uint8_t deg_unit;
+    uint8_t deg_unit; /* 0 = C, 1 = F */
 } tmp_temp_t;
 
 void i2c_initialize(void);
