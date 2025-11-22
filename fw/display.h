@@ -17,7 +17,13 @@
 
 #define LSB_MASK 0x01
 
-static const uint8_t display_table[11] =
+/* indices of non-numerical display symbols */
+#define DSP_CLR 10
+#define DSP_DEG 11
+#define DSP_F   12
+#define DSP_C   13
+
+static const uint8_t display_table[14] =
 {
     0x03, /* 0 */
     0x9F, /* 1 */
@@ -29,7 +35,10 @@ static const uint8_t display_table[11] =
     0x1F, /* 7 */
     0x01, /* 8 */
     0x19, /* 9 */
-    0xFF, /* 10 (clear) */
+    0xFF, /* clear   (10) */
+    0x39, /* degrees (11) */
+    0x71, /* f       (12) */
+    0x63, /* c       (13) */
 };
 
 void display_initialize(void);

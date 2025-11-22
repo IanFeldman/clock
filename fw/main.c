@@ -72,6 +72,12 @@ int main(void)
                     display_set((uint8_t *)&time);
                     break;
 
+                /* temperature display */
+                case 2:
+                    tmp_temp_t temp = i2c_tmp_get_temp();
+                    display_set((uint8_t *)&temp);
+                    break;
+
                 /* off */
                 default:
                     break;

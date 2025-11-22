@@ -1,5 +1,6 @@
 #include "i2c.h"
 #include "LPC8xx.h"
+#include "display.h"
 
 /* Initialize I2C peripheral as master at 100kHz */
 void i2c_initialize(void)
@@ -158,5 +159,53 @@ rtc_time_t i2c_rtc_get_time(void)
     time.hours_tens = (hours_data & 0x30) >> 4;
 
     return time;
+}
+
+
+/* Configure temperature sensor settings */
+void i2c_tmp_output_config(void)
+{
+    /* set resolution */
+    uint8_t resolution = (0x03); /* 0.0625 C/bit */
+    i2c_tx(TMP_CHIP_ADDR, TMP_RES_ADDR, &resolution, sizeof(resolution));
+    /* disable alerts */
+    uint8_t config[2];
+    config[0] = 0x00;
+    config[1] = 0x00;
+    i2c_tx(TMP_CHIP_ADDR, TMP_CNFG_ADDR, (uint8_t *)&config, sizeof(config));
+}
+
+
+/* Get temperature and display it */
+tmp_temp_t i2c_tmp_get_temp(void)
+{
+    /* read temp register */
+    uint8_t temp_raw[2];
+    i2c_rx(TMP_CHIP_ADDR, TMP_TEMP_ADDR, temp_raw, sizeof(temp_raw));
+    uint16_t temp_full = (temp_raw[0] << 8) | temp_raw[1];
+    /* mask out upper bits */
+    temp_full = temp_full & 0x0FFF;
+
+    /* multiply by resolution and 100 to get integer milli-degrees celcius */
+    int temp_m_c = (float)temp_full * 6.25f; /* 0.0625 * 100 */
+
+    /* abcd */
+    tmp_temp_t temp;
+    temp.deg_tens = temp_m_c / 1000;
+    temp_m_c -= (temp.deg_tens * 1000);
+    /* bcd */
+    temp.deg_ones = temp_m_c / 100;
+    temp_m_c -= (temp.deg_ones * 100);
+    /* cd */
+    temp.deg_tenths = temp_m_c / 10;
+    temp_m_c -= (temp.deg_tenths * 10);
+    /* d */
+    temp.deg_hundredths = temp_m_c;
+
+    /* add symbols */
+    temp.deg_symbol = DSP_DEG;
+    temp.deg_unit = DSP_C;
+
+    return temp;
 }
 

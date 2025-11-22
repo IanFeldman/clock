@@ -1,5 +1,6 @@
 #include "LPC8xx.h"
 #include "display.h"
+#include "util.h"
 
 /* Delay for some time. */
 static void display_delay(int counts)
@@ -74,7 +75,8 @@ void display_initialize(void)
 /* Clear display */
 void display_clear(void)
 {
-    const uint8_t values[6] = {10, 10, 10, 10, 10, 10};
-    display_set((uint8_t *)values);
+    uint8_t values[6];
+    memset(values, DSP_CLR, 6);
+    display_set(values);
 }
 
