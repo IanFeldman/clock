@@ -76,7 +76,22 @@ void display_initialize(void)
 void display_clear(void)
 {
     uint8_t values[6];
-    memset(values, DSP_CLR, 6);
+    memset(values, display_table[DSP_CLR], 6);
+    display_set(values);
+}
+
+
+/* Display error */
+void display_error(void)
+{
+    uint8_t values[6] = {
+        display_table[DSP_E],
+        display_table[DSP_R],
+        display_table[DSP_R],
+        display_table[DSP_O],
+        display_table[DSP_R],
+        display_table[DSP_CLR]
+    };
     display_set(values);
 }
 
@@ -105,7 +120,7 @@ void display_temp(tmp_temp_t *temp)
         display_table[temp->deg_tenths],
         display_table[temp->deg_hundredths],
         display_table[DSP_DEG],
-        display_table[(temp->deg_unit ? DSP_F : DSP_C)]
+        display_table[temp->deg_unit]
     };
     display_set(values);
 }

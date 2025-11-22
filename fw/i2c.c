@@ -177,7 +177,7 @@ void i2c_tmp_output_config(void)
 
 
 /* Get temperature and display it */
-tmp_temp_t i2c_tmp_get_temp(void)
+tmp_temp_t i2c_tmp_get_temp(int unit)
 {
     /* read temp register */
     uint8_t temp_raw[2];
@@ -187,23 +187,32 @@ tmp_temp_t i2c_tmp_get_temp(void)
     temp_full = temp_full & 0x0FFF;
 
     /* multiply by resolution and 100 to get integer milli-degrees celcius */
-    int temp_m_c = (float)temp_full * 6.25f; /* 0.0625 * 100 */
+    int temp_m = 0;
+    if (unit == DEG_F)
+    {
+        /* (0.0625 * 9/5 + 32) * 100 */
+        temp_m = (float)temp_full * 11.25f + 3200;
+    }
+    else if (unit == DEG_C)
+    {
+        /* 0.0625 * 100 */
+        temp_m = (float)temp_full * 6.25f;
+    }
 
     /* abcd */
     tmp_temp_t temp;
-    temp.deg_tens = temp_m_c / 1000;
-    temp_m_c -= (temp.deg_tens * 1000);
+    temp.deg_tens = temp_m / 1000;
+    temp_m -= (temp.deg_tens * 1000);
     /* bcd */
-    temp.deg_ones = temp_m_c / 100;
-    temp_m_c -= (temp.deg_ones * 100);
+    temp.deg_ones = temp_m / 100;
+    temp_m -= (temp.deg_ones * 100);
     /* cd */
-    temp.deg_tenths = temp_m_c / 10;
-    temp_m_c -= (temp.deg_tenths * 10);
+    temp.deg_tenths = temp_m / 10;
+    temp_m -= (temp.deg_tenths * 10);
     /* d */
-    temp.deg_hundredths = temp_m_c;
+    temp.deg_hundredths = temp_m;
     /* celcius */
-    temp.deg_unit = 0;
-
+    temp.deg_unit = unit;
     return temp;
 }
 

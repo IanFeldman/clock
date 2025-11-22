@@ -23,11 +23,11 @@
 /* indices of non-numerical display symbols */
 #define DSP_CLR 10
 #define DSP_DEG 11
-#define DSP_F   12
-#define DSP_C   13
+#define DSP_E   14
+#define DSP_R   15
+#define DSP_O   16
 
-
-static const uint8_t display_table[14] =
+static const uint8_t display_table[17] =
 {
     0x03, /* 0 */
     0x9F, /* 1 */
@@ -43,10 +43,14 @@ static const uint8_t display_table[14] =
     0x39, /* degrees (11) */
     0x71, /* f       (12) */
     0x63, /* c       (13) */
+    0x61, /* e       (14) */
+    0xF5, /* r       (15) */
+    0xC5, /* o       (16) */
 };
 
 void display_initialize(void);
 void display_clear(void);
+void display_error(void);
 void display_time(rtc_time_t *time);
 void display_temp(tmp_temp_t *temp);
 

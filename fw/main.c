@@ -74,8 +74,14 @@ int main(void)
 
                 /* temperature display */
                 case 2:
-                    tmp_temp_t temp = i2c_tmp_get_temp();
-                    display_temp(&temp);
+                    tmp_temp_t temp_c = i2c_tmp_get_temp(DEG_C);
+                    display_temp(&temp_c);
+                    break;
+
+                /* temperature display */
+                case 3:
+                    tmp_temp_t temp_f = i2c_tmp_get_temp(DEG_F);
+                    display_temp(&temp_f);
                     break;
 
                 /* off */

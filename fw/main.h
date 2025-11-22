@@ -7,7 +7,7 @@
 #define MODE_PIN 1
 #define MODE_IRQ 1 /* PININT1_IRQ */
 #define MODE_DEBOUNCE 1000
-#define MODE_COUNT 3 /* off, time, temp */
+#define MODE_COUNT 4 /* off, time, temp f, temp c */
 
 void PININT0_IRQHandler(void);
 void PININT1_IRQHandler(void);
