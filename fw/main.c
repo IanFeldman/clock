@@ -160,12 +160,13 @@ static inline void increment_time(void)
     {
         time.hours_ones = 0;
         time.hours_tens++;
+    }
 
-        if ((time.hours_tens == 2) && (time.hours_ones > 3))
-        {
-            time.hours_tens = 0;
-            time.hours_ones = 0;
-        }
+    /* reset hours to 0 at 24 */
+    if (time.hours_tens > 1 && time.hours_ones > 3)
+    {
+        time.hours_tens = 0;
+        time.hours_ones = 0;
     }
 }
 
